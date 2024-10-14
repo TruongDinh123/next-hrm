@@ -18,7 +18,14 @@ export function useRefresh<TData, TError>(
   const { isError, refetch, isFetched } = queryResult;
 
   useEffect(() => {
-    if (unauthorized && pathname !== "/login") {
+    if (
+      unauthorized &&
+      pathname !== "/login" &&
+      pathname !== "/confirm-email" &&
+      pathname !== "/forgot-password" &&
+      pathname !== "/reset-password" &&
+      pathname !== "/register"
+    ) {
       replace("/login");
     }
   }, [unauthorized]);

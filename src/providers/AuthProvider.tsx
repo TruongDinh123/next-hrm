@@ -12,8 +12,8 @@ interface AuthProviderProps {
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const queryResult = useQuery("authentication", authenticationApi, {
-    retry: false,
-    refetchOnWindowFocus: false,
+    retry: 1,
+    refetchOnWindowFocus: true,
   });
   useRefresh(queryResult);
   const { pathname } = useRouter();

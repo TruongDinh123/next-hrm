@@ -1,30 +1,25 @@
-import { loginApi, LoginInput } from "@/apis/login.api";
-import GoogleButton from "@/components/GoogleButton";
-import { User } from "@/models/user.model";
 import { Button, Form, Input, message } from "antd";
-import { AxiosResponse } from "axios";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import { useMutation } from "react-query";
 import bgLogin from "@/app/public/bg-login.png";
+import { registerApi, RegisterInput } from "@/apis/register.api";
 
-export default function Login() {
+export default function Register() {
   const [form] = Form.useForm();
-  const { replace } = useRouter();
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: loginApi,
-    onSuccess: (success: AxiosResponse<User>) => {
-      console.log("🚀 ~ success:", success);
-      message.success("Đăng nhập thành công");
-      replace("/");
+    mutationFn: registerApi,
+    onSuccess: () => {
+      message.success(
+        "Đăng ký thành công. Vui lòng kiểm tra email để xác nhận tài khoản.",
+        5
+      );
     },
     onError: () => {
-      message.error("Đăng nhập thất bại");
+      message.error("Đăng ký thất bại");
     },
   });
 
-  const onFinish = (values: LoginInput) => {
+  const onFinish = (values: RegisterInput) => {
     mutate(values);
   };
 
@@ -50,14 +45,19 @@ export default function Login() {
           borderRadius: 10,
         }}
       >
-        <h1>Đăng nhập</h1>
+        <h1>Đăng ký</h1>
         <Form form={form} size="large" onFinish={onFinish} layout="vertical">
           <Form.Item
             name="email"
-            label={<span style={{ color: "white" }}>Email đăng nhập</span>}
-            rules={[
-              { required: true, message: "Vui lòng nhập Email đăng nhập" },
-            ]}
+            label={<span style={{ color: "white" }}>Email</span>}
+            rules={[{ required: true, message: "Vui lòng nhập Email" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="name"
+            label={<span style={{ color: "white" }}>Tên</span>}
+            rules={[{ required: true, message: "Vui lòng nhập tên" }]}
           >
             <Input />
           </Form.Item>
@@ -69,24 +69,9 @@ export default function Login() {
             <Input.Password />
           </Form.Item>
           <Form.Item>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Link href="/register">Đăng ký</Link>
-              <Link href="/forgot-password">Quên mật khẩu?</Link>
-            </div>
-          </Form.Item>
-          <Form.Item>
             <Button type="primary" htmlType="submit" loading={isLoading} block>
-              Đăng nhập
+              Đăng ký
             </Button>
-          </Form.Item>
-          <Form.Item>
-            <GoogleButton />
           </Form.Item>
         </Form>
       </div>
