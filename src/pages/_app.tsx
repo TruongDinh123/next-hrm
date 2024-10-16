@@ -10,7 +10,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <AuthProvider
+        key={queryClient.getQueryData("authentication") ? "auth" : "no-auth"}
+      >
         <ConfigProvider>
           <GoogleOAuthProvider
             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}

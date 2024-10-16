@@ -1,11 +1,10 @@
 import { authenticationApi } from "@/apis/authentication.api";
 import { AuthContext } from "@/context/auth.context";
 import { useRefresh } from "@/hooks/useRefresh";
-import { Spin } from "antd";
 import { useRouter } from "next/router";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -14,10 +13,12 @@ interface AuthProviderProps {
 export default function AuthProvider({ children }: AuthProviderProps) {
   const { pathname } = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  console.log("🚀 ~ isLoading:", isLoading);
+  const queryClient = useQueryClient();
   const queryResult = useQuery("authentication", authenticationApi, {
     retry: 0,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
   useRefresh(queryResult);
 
@@ -32,29 +33,29 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (pathname === "/login" || pathname === "/confirm-email") {
+    if (
+      pathname === "/login" ||
+      pathname === "/confirm-email" ||
+      pathname === "/forgot-password" ||
+      pathname === "/reset-password" ||
+      pathname === "/register" ||
+      pathname === "/register-confirmation"
+    ) {
       setIsLoading(false);
     }
   }, [pathname]);
 
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const refreshAuth = () => {
+    queryClient.invalidateQueries("authentication");
+  };
 
   return (
     <AuthContext.Provider
-      value={{ user: authenticationResult?.data, isLoading }}
+      value={{
+        user: authenticationResult?.data,
+        isLoading,
+        refreshAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,7 +1,7 @@
 import { AuthContext } from "@/context/auth.context";
 import { useLogout } from "@/hooks/useLogout";
 import { EditOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Layout as AntLayout, Avatar, Dropdown, Menu } from "antd";
+import { Layout as AntLayout, Avatar, Dropdown, Menu, Spin } from "antd";
 import Link from "next/link";
 import { ReactNode, useContext } from "react";
 
@@ -13,7 +13,22 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { mutate: logout, isLoading: isLoggingOut } = useLogout();
-  const { user } = useContext(AuthContext)!;
+  const { user, isLoading } = useContext(AuthContext)!;
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const menu = (
     <Menu>

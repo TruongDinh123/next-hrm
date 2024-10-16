@@ -21,7 +21,6 @@ export default function EmailConfirmationStatus({
   isEmailResent,
   onEmailResent,
 }: EmailConfirmationStatusProps) {
-  console.log("🚀 ~ isEmailResent:", isEmailResent);
   const router = useRouter();
 
   if (isLoading) {
@@ -81,6 +80,7 @@ export default function EmailConfirmationStatus({
               <ResendConfirmEmailButton
                 email={email}
                 onEmailResent={onEmailResent}
+                initialCooldownTime={60}
               />
             )}
           </>
@@ -94,6 +94,7 @@ export default function EmailConfirmationStatus({
               <ResendConfirmEmailButton
                 email={email}
                 onEmailResent={onEmailResent}
+                initialCooldownTime={60}
               />
             )}
           </>

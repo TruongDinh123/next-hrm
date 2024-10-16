@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Typography } from "antd";
+import { Button, Typography } from "antd";
 import ResetPasswordForm from "@/components/ResetPasswordForm";
 
 const { Title } = Typography;
@@ -16,6 +16,9 @@ export default function ConfirmEmail() {
     <div style={{ maxWidth: 300, margin: "100px auto" }}>
       <Title level={2}>Reset Password</Title>
       <ResetPasswordForm token={token} />
+      <Button type="link" href="/login" block>
+        Đăng nhập
+      </Button>
     </div>
   );
 }

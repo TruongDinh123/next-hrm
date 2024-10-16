@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { Spin, Pagination, Input, Form, Modal, Button } from "antd";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { fetchUsers, GetUsersQueryParams } from "@/apis/user.api";
 import { ColumnsType } from "antd/es/table";
 import { User } from "@/models/user.model";
@@ -9,6 +9,7 @@ import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { useDeactivateUser } from "@/hooks/useDeactivateUser";
 import { useCheckRole } from "@/hooks/useCheckRole";
 import { UserRoles } from "@/enums/user-roles";
+import { AuthContext } from "@/context/auth.context";
 
 const Table = dynamic(() => import("antd/lib/table"), { ssr: false });
 
@@ -22,6 +23,8 @@ const UsersList = () => {
     limit: 10,
     search: "",
   });
+
+  const { user: currentUser } = useContext(AuthContext)!;
 
   const { data, isLoading, isError } = useQuery(
     ["users", queryParams],
@@ -92,17 +95,21 @@ const UsersList = () => {
       key: "actions",
       render: (_, record) => (
         <>
-          <Button
-            type="primary"
-            style={{ marginRight: 8 }}
-            onClick={() => handleEdit(record)}
-          >
-            Edit
-          </Button>
           {checkRole([UserRoles.OWNER, UserRoles.ADMIN]) && (
-            <Button onClick={() => handleDeactivate(record.id)} danger>
-              Deactivate
-            </Button>
+            <>
+              <Button
+                type="primary"
+                style={{ marginRight: 8 }}
+                onClick={() => handleEdit(record)}
+              >
+                Edit
+              </Button>
+              {currentUser?.id !== record.id && (
+                <Button onClick={() => handleDeactivate(record.id)} danger>
+                  Deactivate
+                </Button>
+              )}
+            </>
           )}
         </>
       ),

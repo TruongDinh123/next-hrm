@@ -6,6 +6,8 @@ export default function RegisterConfirmation() {
       isLoading={false}
       isConfirmed={false}
       isRegistrationComplete={true}
+      isEmailResent={false}
+      onEmailResent={() => {}}
     />
   );
 }

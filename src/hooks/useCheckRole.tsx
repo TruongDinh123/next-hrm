@@ -8,7 +8,6 @@ export function useCheckRole() {
 
   const checkRole = (roles: UserRoles[]): boolean => {
     if (!user || !user.role) return false;
-
     const userRole = user.role.role as UserRoles;
     return roles.includes(userRole);
   };

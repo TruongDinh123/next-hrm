@@ -5,18 +5,19 @@ import { Button, Form, Input, message } from "antd";
 import { AxiosResponse } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import bgLogin from "@/app/public/bg-login.png";
 
 export default function Login() {
   const [form] = Form.useForm();
   const { replace } = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation({
     mutationFn: loginApi,
     onSuccess: (success: AxiosResponse<User>) => {
-      console.log("🚀 ~ success:", success);
       message.success("Đăng nhập thành công");
+      queryClient.setQueryData("authentication", success);
       replace("/");
     },
     onError: () => {
