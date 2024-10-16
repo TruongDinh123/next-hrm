@@ -42,10 +42,11 @@ export default function Login() {
     >
       <div
         style={{
-          maxWidth: 300,
+          maxWidth: 400,
+          width: "100%",
           margin: "100px auto",
           color: "whitesmoke",
-          backgroundColor: "rgba(0, 0, 0, 0.147)",
+          backgroundColor: "rgba(37, 41, 123, 0.147)",
           padding: 20,
           borderRadius: 10,
         }}
@@ -56,7 +57,12 @@ export default function Login() {
             name="email"
             label={<span style={{ color: "white" }}>Email đăng nhập</span>}
             rules={[
-              { required: true, message: "Vui lòng nhập Email đăng nhập" },
+              { required: true, message: "Vui lòng nhập Email" },
+              {
+                pattern:
+                  /^[a-zA-Z0-9._%+-]+@(?!-)[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/,
+                message: "Email không đúng định dạng",
+              },
             ]}
           >
             <Input />
@@ -64,7 +70,15 @@ export default function Login() {
           <Form.Item
             name="password"
             label={<span style={{ color: "white" }}>Mật khẩu</span>}
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu" },
+              {
+                pattern:
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$/,
+                message:
+                  "Mật khẩu phải có ít nhất 7 ký tự, bao gồm chữ cái, số và ký tự đặc biệt",
+              },
+            ]}
           >
             <Input.Password />
           </Form.Item>

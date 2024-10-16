@@ -2,14 +2,23 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { message, Spin } from "antd";
 import { confirmEmailApi } from "@/apis/authentication.api";
+import EmailConfirmationStatus from "@/components/EmailConfirmationStatus";
 
 export default function ConfirmEmail() {
   const router = useRouter();
   const { token } = router.query;
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isEmailResent, setIsEmailResent] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
+    const storedEmail = localStorage.getItem("registeredEmail");
+
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+
     if (token) {
       confirmEmail(token as string);
     }
@@ -20,13 +29,28 @@ export default function ConfirmEmail() {
       await confirmEmailApi(confirmationToken);
       setIsConfirmed(true);
       message.success("Email đã được xác nhận thành công!");
-      setTimeout(() => router.push("/login"), 3000);
-    } catch (error) {
+      localStorage.removeItem("registeredEmail");
+      setTimeout(() => router.push("/login"), 5000);
+    } catch (error: any) {
       console.error("Lỗi xác nhận email:", error);
-      message.error("Xác nhận email thất bại. Vui lòng thử lại.");
+      if (
+        error.response?.status === 400 &&
+        error.response.data.message === "Email confirmation token expired"
+      ) {
+        message.error(
+          "Token xác nhận email đã hết hạn. Vui lòng yêu cầu gửi lại email xác nhận."
+        );
+        setIsEmailResent(true);
+      } else {
+        message.error("Xác nhận email thất bại. Vui lòng thử lại.");
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleEmailResent = () => {
+    setIsEmailResent(true);
   };
 
   if (isLoading) {
@@ -45,15 +69,13 @@ export default function ConfirmEmail() {
   }
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>
-        {isConfirmed ? "Xác nhận email thành công!" : "Xác nhận email thất bại"}
-      </h1>
-      <p>
-        {isConfirmed
-          ? "Tài khoản của bạn đã được xác nhận. Bạn sẽ được chuyển hướng đến trang đăng nhập trong vài giây."
-          : "Có lỗi xảy ra trong quá trình xác nhận email. Vui lòng thử lại hoặc liên hệ hỗ trợ."}
-      </p>
-    </div>
+    <EmailConfirmationStatus
+      isLoading={isLoading}
+      isConfirmed={isConfirmed}
+      isRegistrationComplete={false}
+      email={email || undefined}
+      isEmailResent={isEmailResent}
+      onEmailResent={handleEmailResent}
+    />
   );
 }

@@ -24,7 +24,8 @@ export function useRefresh<TData, TError>(
       pathname !== "/confirm-email" &&
       pathname !== "/forgot-password" &&
       pathname !== "/reset-password" &&
-      pathname !== "/register"
+      pathname !== "/register" &&
+      pathname !== "/register-confirmation"
     ) {
       replace("/login");
     }

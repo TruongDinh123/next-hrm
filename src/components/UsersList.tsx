@@ -7,6 +7,8 @@ import { User } from "@/models/user.model";
 import dynamic from "next/dynamic";
 import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { useDeactivateUser } from "@/hooks/useDeactivateUser";
+import { useCheckRole } from "@/hooks/useCheckRole";
+import { UserRoles } from "@/enums/user-roles";
 
 const Table = dynamic(() => import("antd/lib/table"), { ssr: false });
 
@@ -28,7 +30,6 @@ const UsersList = () => {
       keepPreviousData: true,
     }
   );
-
   const updateUserMutation = useUpdateUser();
   const deactivateUserMutation = useDeactivateUser();
 
@@ -68,6 +69,8 @@ const UsersList = () => {
     });
   };
 
+  const { checkRole } = useCheckRole();
+
   const columns: ColumnsType<User> = [
     {
       title: "Email",
@@ -96,9 +99,11 @@ const UsersList = () => {
           >
             Edit
           </Button>
-          <Button onClick={() => handleDeactivate(record.id)} danger>
-            Deactivate
-          </Button>
+          {checkRole([UserRoles.OWNER, UserRoles.ADMIN]) && (
+            <Button onClick={() => handleDeactivate(record.id)} danger>
+              Deactivate
+            </Button>
+          )}
         </>
       ),
     },

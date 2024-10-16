@@ -1,6 +1,7 @@
 import { authenticationApi } from "@/apis/authentication.api";
 import { AuthContext } from "@/context/auth.context";
 import { useRefresh } from "@/hooks/useRefresh";
+import { Spin } from "antd";
 import { useRouter } from "next/router";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -11,12 +12,14 @@ interface AuthProviderProps {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
+  const { pathname } = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const queryResult = useQuery("authentication", authenticationApi, {
-    retry: 1,
+    retry: 0,
     refetchOnWindowFocus: true,
   });
   useRefresh(queryResult);
-  const { pathname } = useRouter();
 
   const {
     isSuccess: isAuthenticated,
@@ -24,17 +27,30 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     data: authenticationResult,
   } = queryResult;
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
   useEffect(() => {
     if (isAuthenticated && isFetched) setIsLoading(false);
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (pathname === "/login") {
+    if (pathname === "/login" || pathname === "/confirm-email") {
       setIsLoading(false);
     }
   }, [pathname]);
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider
