@@ -13,20 +13,36 @@ interface AuthProviderProps {
 export default function AuthProvider({ children }: AuthProviderProps) {
   const { pathname } = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  console.log("🚀 ~ isLoading:", isLoading);
   const queryClient = useQueryClient();
   const queryResult = useQuery("authentication", authenticationApi, {
     retry: 0,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
-  useRefresh(queryResult);
+  // useRefresh(queryResult);
 
   const {
     isSuccess: isAuthenticated,
+    isError: unauthorized,
     isFetched,
     data: authenticationResult,
   } = queryResult;
+
+  const { replace } = useRouter();
+
+  useEffect(() => {
+    if (
+      unauthorized &&
+      pathname !== "/login" &&
+      pathname !== "/confirm-email" &&
+      pathname !== "/forgot-password" &&
+      pathname !== "/reset-password" &&
+      pathname !== "/register" &&
+      pathname !== "/register-confirmation"
+    ) {
+      replace("/login");
+    }
+  }, [unauthorized]);
 
   useEffect(() => {
     if (isAuthenticated && isFetched) setIsLoading(false);

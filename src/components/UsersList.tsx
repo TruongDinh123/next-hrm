@@ -86,11 +86,6 @@ const UsersList = () => {
       key: "name",
     },
     {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-    },
-    {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
